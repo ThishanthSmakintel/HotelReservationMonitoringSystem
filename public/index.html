@@ -13,7 +13,12 @@
 
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-3">Room Availability Checker</h1>
+        <h1 class="text-center mb-3">Hotel Room Reservation Availability Monitor <span id="lastUpdated"
+                class="text-center">Last updated: -
+            </span></h1>
+        <!-- Last updated time -->
+
+        <!-- Calendar container -->
         <div id="calendar"></div>
     </div>
 
@@ -33,25 +38,26 @@
                     <h5 class="modal-title" id="eventModalLabel">Booking Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="modalBody">
-                    <!-- Modal Body fetched form js  -->
-                </div>
+                <div class="modal-body" id="modalBody"></div>
             </div>
         </div>
     </div>
 
     <script>
+
         async function fetchReservationData() {
             try {
                 const response = await fetch('http://127.0.0.1:3000/reservations');
-                const data = await response.json();
-                return data;
+                if (!response.ok) {
+                    $('#lastUpdated').text('Failed to fetch data').css('color', 'red');
+                }
+
+                return await response.json();
             } catch (error) {
-                console.error('Error fetching reservation data:', error);
                 throw error;
             }
         }
-
+        //set colors
         function getColorByHotel(hotel) {
             const colors = {
                 'bookingPlatform1': 'blue',
@@ -68,40 +74,49 @@
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
+                    right: 'dayGridMonth,listYear'
                 },
-                events: async function (fetchInfo, successCallback, failureCallback) {
-                    try {
-                        const reservations = await fetchReservationData();
-                        const events = reservations.map(reservation => ({
-                            title: `${reservation.title}`,
-                            start: reservation.start,
-                            end: reservation.end,
-                            backgroundColor: getColorByHotel(reservation.hotel),
-                            extendedProps: {
-                                checkin: reservation.checkin,
-                                checkout: reservation.checkout,
-                                hotel: reservation.hotel
-                            }
-                        }));
-                        successCallback(events);
-                    } catch (error) {
-                        failureCallback(error);
-                    }
-                },
+                //click preview model
                 eventClick: function (info) {
                     const modalBody = $('#modalBody');
                     modalBody.html(`
                         <p><strong>Title:</strong> ${info.event.title}</p>
-                        <p><strong>booking Platform:</strong> ${info.event.extendedProps.hotel || 'Unknown'}</p>
+                        <p><strong>Booking Platform:</strong> ${info.event.extendedProps.hotel || 'Unknown'}</p>
                         <p><strong>Check-in:</strong> ${info.event.extendedProps.checkin}</p>
                         <p><strong>Check-out:</strong> ${info.event.extendedProps.checkout}</p>
                     `);
-                    const modal = new bootstrap.Modal($('#eventModal')[0]);
-                    modal.show();
+                    new bootstrap.Modal($('#eventModal')[0]).show();
                 }
             });
+
+
             calendar.render();
+
+            //set Data In Calender
+            const fetchReservationDataAndUpdateCalendar = async () => {
+                try {
+                    const reservations = await fetchReservationData();
+                    const events = reservations.map(reservation => ({
+                        title: `${reservation.title}`,
+                        start: reservation.start,
+                        end: reservation.end,
+                        backgroundColor: getColorByHotel(reservation.hotel),
+                        extendedProps: {
+                            checkin: reservation.checkin,
+                            checkout: reservation.checkout,
+                            hotel: reservation.hotel
+                        }
+                    }));
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(events);
+                    $('#lastUpdated').text(`Last updated: ${new Date().toLocaleTimeString()}`).css('color', 'green');;
+                } catch (error) {
+                    console.log('Error fetching reservation data:', error);
+                }
+            };
+
+
+            setInterval(fetchReservationDataAndUpdateCalendar, 1000);
         });
     </script>
 </body>
