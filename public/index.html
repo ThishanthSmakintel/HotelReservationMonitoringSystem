@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Availability Checker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-3">Hotel Room Reservation Availability Monitor <span id="lastUpdated"
+                class="text-center">Last updated: -
+            </span></h1>
+        <!-- Last updated time -->
+
+        <!-- Calendar container -->
+        <div id="calendar"></div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Booking Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        async function fetchReservationData() {
+            try {
+                const response = await fetch('http://127.0.0.1:3000/reservations');
+                if (!response.ok) {
+                    $('#lastUpdated').text('Failed to fetch data').css('color', 'red');
+                }
+
+                return await response.json();
+            } catch (error) {
+                throw error;
+            }
+        }
+        //set colors
+        function getColorByHotel(hotel) {
+            const colors = {
+                'bookingPlatform1': 'blue',
+                'bookingPlatform2': 'green',
+                'bookingPlatform3': 'red',
+            };
+            return colors[hotel] || 'grey';
+        }
+
+        $(document).ready(async function () {
+            const calendarEl = $('#calendar')[0];
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listYear'
+                },
+                //click preview model
+                eventClick: function (info) {
+                    const modalBody = $('#modalBody');
+                    modalBody.html(`
+                        <p><strong>Title:</strong> ${info.event.title}</p>
+                        <p><strong>Booking Platform:</strong> ${info.event.extendedProps.hotel || 'Unknown'}</p>
+                        <p><strong>Check-in:</strong> ${info.event.extendedProps.checkin}</p>
+                        <p><strong>Check-out:</strong> ${info.event.extendedProps.checkout}</p>
+                    `);
+                    new bootstrap.Modal($('#eventModal')[0]).show();
+                }
+            });
+
+
+            calendar.render();
+
+            //set Data In Calender
+            const fetchReservationDataAndUpdateCalendar = async () => {
+                try {
+                    const reservations = await fetchReservationData();
+                    const events = reservations.map(reservation => ({
+                        title: `${reservation.title}`,
+                        start: reservation.start,
+                        end: reservation.end,
+                        backgroundColor: getColorByHotel(reservation.hotel),
+                        extendedProps: {
+                            checkin: reservation.checkin,
+                            checkout: reservation.checkout,
+                            hotel: reservation.hotel
+                        }
+                    }));
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(events);
+                    $('#lastUpdated').text(`Last updated: ${new Date().toLocaleTimeString()}`).css('color', 'green');;
+                } catch (error) {
+                    console.log('Error fetching reservation data:', error);
+                }
+            };
+
+
+            setInterval(fetchReservationDataAndUpdateCalendar, 1000);
+        });
+    </script>
+</body>
+
+</html>

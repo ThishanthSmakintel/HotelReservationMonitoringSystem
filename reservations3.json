@@ -1,0 +1,12 @@
+{
+  "hotel": "bookingPlatform2",
+  "reservations": [
+    {
+      "name": "Reservation 7",
+      "startDate": "2024-07-05",
+      "endDate": "2024-07-05",
+      "checkin": "12:00 PM",
+      "checkout": "4:00 PM"
+    }
+  ]
+}

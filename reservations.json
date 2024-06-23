@@ -1,0 +1,85 @@
+{
+  "hotel": "bookingPlatform1",
+  "reservations": [
+    {
+      "name": "Reservation 1",
+      "status": "Confirmed",
+      "startDate": "2024-06-10",
+      "endDate": "2024-06-15",
+      "checkin": "10:00 AM",
+      "checkout": "2:00 PM"
+    },
+    {
+      "name": "Reservation 2",
+      "status": "Confirmed",
+      "startDate": "2024-06-16",
+      "endDate": "2024-06-16",
+      "checkin": "11:00 AM",
+      "checkout": "3:00 PM"
+    },
+    {
+      "name": "Reservation 3",
+      "status": "Confirmed",
+      "startDate": "2024-06-17",
+      "endDate": "2024-06-17",
+      "checkin": "9:00 AM",
+      "checkout": "1:00 PM"
+    },
+    {
+      "name": "Reservation 4",
+      "status": "Confirmed",
+      "startDate": "2024-06-18",
+      "endDate": "2024-06-18",
+      "checkin": "2:00 PM",
+      "checkout": "6:00 PM"
+    },
+    {
+      "name": "Reservation 5",
+      "status": "Confirmed",
+      "startDate": "2024-06-19",
+      "endDate": "2024-06-19",
+      "checkin": "3:00 PM",
+      "checkout": "7:00 PM"
+    },
+    {
+      "name": "Reservation 6",
+      "status": "Confirmed",
+      "startDate": "2024-06-20",
+      "endDate": "2024-06-20",
+      "checkin": "12:00 PM",
+      "checkout": "4:00 PM"
+    },
+    {
+      "name": "Reservation 7",
+      "status": "Confirmed",
+      "startDate": "2024-06-21",
+      "endDate": "2024-06-21",
+      "checkin": "1:00 PM",
+      "checkout": "5:00 PM"
+    },
+    {
+      "name": "Reservation 8",
+      "status": "Confirmed",
+      "startDate": "2024-06-22",
+      "endDate": "2024-06-22",
+      "checkin": "10:00 AM",
+      "checkout": "2:00 PM"
+    },
+    {
+      "name": "Reservation 9",
+      "status": "Confirmed",
+      "startDate": "2024-06-23",
+      "endDate": "2024-06-23",
+      "checkin": "9:00 AM",
+      "checkout": "1:00 PM"
+    },
+    {
+      "name": "Reservation 10",
+      "status": "Confirmed",
+      "startDate": "2024-06-24",
+      "endDate": "2024-06-24",
+      "checkin": "11:00 AM",
+      "checkout": "3:00 PM"
+    }
+  ]
+}
